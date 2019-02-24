@@ -1,48 +1,53 @@
-const listRes = all => {
-	document.querySelector("#hdr b").innerText = all.length
-
-	var lst = document.querySelector("#lst")
+const renderItems = items => {
     var q
+	document.querySelector("#hdr b").innerText = items.length
+	var lst = document.querySelector("#lst")
 	while (q = lst.lastChild) lst.removeChild(q)
-
-	for (let rs of all) {
-		lst.appendChild(makeLine(rs.href, rs.nm))
-	}
+	if (items) for (let rs of items) lst.appendChild(renderItem(rs.href, rs.nm))
 }
 
-const makeLine = (href, text) => {
+const renderItem = (href, text) => {
 	var ln = document.createElement("div")
-	ln.classList.add(RSNM_CN)
-	ln.appendChild(makeButton(href, h => {}))
+	ln.classList.add("restnm")
+	let callback = () => unblock(href)
+	ln.appendChild(makeButton(callback))
 	var tx = document.createElement("span")
-	tx.addEventListener("click", e => browser.tabs.create({
-		active: false, url: href
-	}))
+	tx.addEventListener("click", e => browser.tabs.create({active: false, url: href}))
 	tx.innerText = text
 	ln.appendChild(tx)
 	return ln
 }
 
-const makeButton = href => {
-	var b = document.createElement("a")
-	b.classList.add(BUTN_CN)
-	b.addEventListener("click", e => {
-		e.preventDefault()
-		e.stopPropagation()
-		unblock(href)
-		return false
-	})
-	return b
+const toLastTab = cb => browser.tabs.query({active: true, lastFocusedWindow: true}).
+	then(tabs => {if (tabs && tabs.length == 1) cb(tabs[0])})
+
+// outgoing messages
+// to bg
+const unblock = href => browser.runtime.sendMessage({event: MSG_UNBLOCK, href: href})
+// to tab
+const requestFiltered = toLastTab(tab =>
+	browser.tabs.sendMessage(tab.id, {event: MSG_REQUEST_FILT}).then
+		(f => renderItems(f), e => renderItems(null)))
+
+
+// incoming messages
+const handler = (msg, snd, sendResponse) => {
+	switch (msg.event) {
+		// from tabs
+		case MSG_UPDATE:
+			toLastTab(tab => {if (tab.id == snd.tab.id) renderItems(msg.filtered)})
+			break
+	}
 }
 
-const broadcast = msg =>
-	browser.tabs.query({}).then(t => {for (let tab of t)
-		{browser.tabs.sendMessage(tab.id, msg).then(i => refresh())}})
+// initialize
+browser.runtime.onMessage.addListener(handler)
+document.getElementById("refresh").addEventListener("click", e => requestFiltered())
+document.getElementById("seeall").addEventListener("click", e =>
+	browser.tabs.create({active: true, url: "/main.html"}))
+document.getElementById("amo").addEventListener("click", e =>
+	browser.tabs.create({active: true, url: AMO_URL}))
+document.getElementById("homepage").addEventListener("click", e =>
+	browser.tabs.create({active: true, url: HOMEPAGE_URL}))
+requestFiltered()
 
-const unblock = href => broadcast({event: MSG_UNBLOCK, path: href})
-const unblockAll = () => broadcast({event: MSG_UNBLOCK_ALL})
-
-document.getElementById("reset").addEventListener("click", e => unblockAll())
-
-const refresh = () => browser.storage.local.get().then(i => listRes(i.rmd))
-refresh()

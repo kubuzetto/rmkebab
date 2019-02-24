@@ -1,35 +1,30 @@
 {
 	"manifest_version": 2,
 	"name": "Remove Kebab",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Yemeksepeti'nde asla sipariş vermeyeceğiniz restoranları listeden kaldırın, bir daha göstermesin.",
-	"homepage": "https://github.com/kubuzetto/rmkebab",
+	"homepage_url": "https://github.com/kubuzetto/rmkebab",
 	"icons": {
-		 "19":  "icons/rmkebab19.png",
-		 "32":  "icons/rmkebab32.png",
-		 "38":  "icons/rmkebab38.png",
-		 "48":  "icons/rmkebab48.png",
-		 "64":  "icons/rmkebab64.png",
-		 "96":  "icons/rmkebab96.png",
-		"128": "icons/rmkebab128.png",
-		"256": "icons/rmkebab256.png"
-	},
-	"applications": {
-		"gecko": {
-			"strict_min_version": "56.0a1"
-		}
+		 "19": "icon.svg",
+		 "32": "icon.svg",
+		 "38": "icon.svg",
+		 "48": "icon.svg",
+		 "64": "icon.svg",
+		 "96": "icon.svg",
+		"128": "icon.svg",
+		"256": "icon.svg"
 	},
 	"permissions": ["storage"],
 	"browser_action": {
 		"default_icon": {
-			 "19":  "icons/rmkebab19.png",
-			 "32":  "icons/rmkebab32.png",
-			 "38":  "icons/rmkebab38.png",
-			 "48":  "icons/rmkebab48.png",
-			 "64":  "icons/rmkebab64.png",
-			 "96":  "icons/rmkebab96.png",
-			"128": "icons/rmkebab128.png",
-			"256": "icons/rmkebab256.png"
+			 "19": "icon.svg",
+			 "32": "icon.svg",
+			 "38": "icon.svg",
+			 "48": "icon.svg",
+			 "64": "icon.svg",
+			 "96": "icon.svg",
+			"128": "icon.svg",
+			"256": "icon.svg"
 		},
 		"default_title": "Remove Kebab",
 		"default_popup": "popup.html"
@@ -43,5 +38,11 @@
 	],
 	"background": {
 		"scripts": ["constants.js", "bg.js"]
+	},
+	"applications": {
+		"gecko": {
+			"id": "rmkebab@kubuzetto.git",
+			"strict_min_version": "57.0"
+		}
 	}
 }

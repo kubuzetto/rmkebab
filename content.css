@@ -4,24 +4,26 @@
 #popup body {
 	background: #fff;
 	padding: 15px;
+	padding-bottom: 5px;
+	-moz-user-select: none;
+	user-select: none;
 }
 #popup * {
 	user-select: none;
 }
-#hdr {
+#hdr {display: block}
+#hdr, #commands {
 	font-family: Open Sans, sans-serif;
 	font-weight: 500;
 	font-size: 11px;
-	text-align:center;
+	text-align: center;
 	color: #888;
-	display: block;
 }
 #hdr b {
 	font-weight: 700;
 }
 a.rmkebab-btn, a.rmkebab-btn:active,
-a.rmkebab-btn:link, a.rmkebab-btn:hover,
-#reset, #reset:active, #reset:link, #reset:hover {
+a.rmkebab-btn:link, a.rmkebab-btn:hover {
 	display: inline-block;
 	position: relative;
 	top: 0 !important;
@@ -42,22 +44,58 @@ a.rmkebab-btn:link, a.rmkebab-btn:hover,
 	border-radius: 3px;
 	vertical-align: middle;
 }
-a.rmkebab-btn:hover, #reset:hover {
-	background: #ff6508 !important;
-	color: #fff !important;
-}
 a.rmkebab-btn::after {
 	content: "X";
 }
-#reset, #reset:active, #reset:link, #reset:hover {
+#seeall, #seeall:active, #seeall:link, #seeall:hover,
+#unblockall, #unblockall:active, #unblockall:link, #unblockall:hover {
+	margin: 0;
 	cursor: pointer;
-	text-align:center;
+	font-family: Open Sans, sans-serif;
+	font-weight: 700;
+	text-decoration: none;
+	line-height: 1.42857;
+	color: #ff6508 !important;
+	border: 1px solid #ff6508;
+	border-radius: 3px;
+	vertical-align: middle;
+	display: block;
+	text-align: center;
 	font-size: 11px;
 	padding: 8px 4px;
-	display: block;
 }
-#reset::after {
+a.rmkebab-btn:hover, #seeall:hover, #unblockall:hover {
+	background: #ff6508 !important;
+	color: #fff !important;
+}
+#seeall::after {
+	content: "TÜMÜNÜ GÖR";
+}
+#unblockall::after {
 	content: "TEMİZLE";
+}
+#commands {
+	margin-top: 10px;
+	display: flex;
+	text-align:center;
+}
+#commands a {
+	display: block;
+	padding: 5px 0;
+	flex-grow: 1;
+	cursor: pointer;
+}
+#commands a:hover {
+	color: #ff6508;
+}
+#refresh::after {
+	content: "⟳ Yenile";
+}
+#amo::after {
+	content: "🦊 Mozilla Addons"
+}
+#homepage::after {
+	content: "❮❯ Github";
 }
 #popup #lst {
 	margin-top: 10px;
@@ -65,6 +103,9 @@ a.rmkebab-btn::after {
 	border-top: 1px #e5e5e5 solid;
 	width: 410px;
 	display: block;
+}
+#alllist {
+	margin: 40px;
 }
 .restnm {
 	display: block;
@@ -91,4 +132,13 @@ a.rmkebab-btn::after {
 }
 .restnm:hover span {
 	color: #ff7e03;
+}
+#alllist #lst {
+	margin: 20px 0;
+}
+#alllist .restnm span {
+	width: inherit;
+}
+#alllist .restnm:last-child {
+	border-bottom: none !important;
 }

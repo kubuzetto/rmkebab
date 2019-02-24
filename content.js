@@ -3,110 +3,96 @@
 	if (window.kebabRemoved) return
 	window.kebabRemoved = true
 
-	var cfg = {rmd: []}
+	let filt = []
 
-	// make button
-	const makeButton = (ln, fn) => {
-		var b = document.createElement("a")
-		b.setAttribute("relHref", ln.href)
-		b.setAttribute("relNm", ln.textContent.trim())
-		b.classList.add(BUTN_CN)
-		b.addEventListener("click", e => {
-			e.preventDefault()
-			e.stopPropagation()
-			fn(e.target.getAttribute("relHref"),
-			   e.target.getAttribute("relNm"))
-			return false
-		})
-		return b
-	}
+	// class names
+	const RESN_CN = "restaurantName"
+	const REMD_CN = "removedKebab"
+	const RSLS_CN = "ys-reslist"
+	const ITEM_CN = "ys-item"
+	const HEAD_CN = "head"
 
 	const hasch = (rt, cn) => {
 		var b = rt.getElementsByClassName(cn)
 		if (b && b.length > 0) return b[0]
 		return null
 	}
-	
-	const haslink = href => {
-		let l = cfg.rmd.filter(x => x.href === href)
+
+	const haslink = (conf, href) => {
+		let l = conf.rmd.filter(x => x.href === href)
 		if (l && l.length > 0) return l
 		return null
 	}
 
-	const applyFilter = nd => {
-		let its = nd.getElementsByClassName(ITEM_CN)
-		if (!its || its.length == 0) return
-		
+	const applyFilter = (conf, nd = document.body) => {
 		let filtered = []
+		let its = nd.getElementsByClassName(ITEM_CN)
+		if (!its || its.length == 0) return filtered
 		for (let it of its) {
 			let hd = hasch(it, HEAD_CN)
 			if (hd) {
 				let ln = hasch(hd, RESN_CN)
 				if (ln) {
-					if (!hasch(hd, BUTN_CN))
-						hd.prepend(makeButton(ln, block))
-					let entry = haslink(ln.href)
+					let link = ln.href
+					let nm = ln.textContent.trim()
+					if (!hasch(hd, "rmkebab-btn")) {
+						let callback = () => block(link, nm)
+						hd.prepend(makeButton(callback))
+					}
+					let entry = haslink(conf, ln.href)
 					if (entry) {
 						it.classList.add(REMD_CN)
-						filtered.push(entry)
+						if (filtered.filter(x => x.href == link) == 0)
+							filtered.push({href: link, nm: nm})
 					} else while (it.classList.contains(REMD_CN))
 						it.classList.remove(REMD_CN)
 				}
 			}
 		}
-		browser.runtime.sendMessage({
-			event: MSG_REFRESH,
-			filtered: filtered,
-			all: cfg.rmd
-		})
+		return filtered
 	}
 
-	const block = (href, nm) => {
-		handler({event: MSG_BLOCK, path: href, name: nm})
+	const updateConfig = c => {
+		if (c) {
+			filt = applyFilter(c)
+			sendCurrent(filt)
+		} else requestConfig()
 	}
 
-	const mutate = (trg = document.body) => {
-		handler({event: MSG_MUTATION, target: trg})
-	}
+	// outgoing messages
+	// to bg
+	const requestConfig = () => browser.runtime.sendMessage({event: MSG_REQUEST_CONF}).
+		then(c => updateConfig(c), e => updateConfig(null))
+	// to bg
+	const block = (href, name) => browser.runtime.sendMessage(
+		{event: MSG_BLOCK, href: href, nm: name})
+	// to bg / popup
+	const sendCurrent = filtered => browser.runtime.sendMessage({
+		event: MSG_UPDATE, filtered: filtered})
 
-	// message handler
-	const handler = msg => {
+	// incoming messages
+	const handler = (msg, snd, sendResponse) => {
 		switch (msg.event) {
-			case MSG_MUTATION:
-				applyFilter(msg.target)
+			// from bg
+			case MSG_CONFIG:
+				updateConfig(msg.config)
 				break
-
-			case MSG_UNBLOCK_ALL:
-				cfg.rmd = []
-				browser.storage.local.set(cfg)
-				mutate()
-				break
-
-			case MSG_UNBLOCK:
-				cfg.rmd = cfg.rmd.filter(x => x.href !== msg.path)
-				browser.storage.local.set(cfg)
-				mutate()
-				break
-
-			case MSG_BLOCK:
-				cfg.rmd.push({href: msg.path, nm: msg.name})
-				browser.storage.local.set(cfg)
-				mutate()
+			// from popup
+			case MSG_REQUEST_FILT:
+				sendResponse(filt)
 				break
 		}
 	}
 
 	// initialize
-	browser.storage.local.get().then(c => {
-		if (c && c.rmd) cfg.rmd = c.rmd
-		browser.runtime.onMessage.addListener(handler)
-		var reslists = document.getElementsByClassName(RSLS_CN);
-		if (reslists) {
-			let mo = new MutationObserver(ms =>
-				{ms.forEach(m => mutate(m.target))})
-			let mocfg = {subtree: true, childList: true}
-			for (let reslist of reslists) mo.observe(reslist, mocfg)
-		}
-		mutate()
-	})
+	browser.runtime.onMessage.addListener(handler)
+	var reslists = document.getElementsByClassName(RSLS_CN)
+	if (reslists) {
+		let mo = new MutationObserver(ms => {
+			filt = [].concat.apply([], reslists.map(r => applyFilter(cfg, r)))
+			sendCurrent(filt)
+		})
+		for (let reslist of reslists) mo.observe(reslist, {subtree: true, childList: true})
+	}
+	requestConfig()
 })()
