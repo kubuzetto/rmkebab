@@ -41,7 +41,7 @@
 	},
 	"applications": {
 		"gecko": {
-			"id": "rmkebab@kubuzetto.git",
+			"id": "{e36b9550-00f3-4989-9f41-d1b8080bda8a}",
 			"strict_min_version": "57.0"
 		}
 	}
