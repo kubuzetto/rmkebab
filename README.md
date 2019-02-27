@@ -7,7 +7,5 @@ Adds the ability to 'block' some restaurants in http://yemeksepeti.com. Don't le
 TODO
 ----
 
-- 'Options' page
-- Only list the restaurants that are being blocked in the page currently; instead of all blacklisted
 - Multi-language support
-
+- Chrome support?
