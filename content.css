@@ -5,16 +5,16 @@
 	background: #fff;
 	padding: 15px;
 	padding-bottom: 5px;
-	-moz-user-select: none;
-	user-select: none;
 }
-#popup * {
+#popup *, .rmkebab-btn {
+	-moz-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 #hdr {display: block}
 #hdr, #commands {
 	font-family: Open Sans, sans-serif;
-	font-weight: 500;
+	font-weight: 400;
 	font-size: 11px;
 	text-align: center;
 	color: #888;
@@ -89,13 +89,13 @@ a.rmkebab-btn:hover, #seeall:hover, #unblockall:hover {
 	color: #ff6508;
 }
 #refresh::after {
-	content: "⟳ Yenile";
+	content: "\27F3\2003Yenile";
 }
 #amo::after {
-	content: "🦊 Mozilla Addons"
+	content: "\1f31f\2003Mozilla Addons"
 }
 #homepage::after {
-	content: "❮❯ Github";
+	content: "\276E\276F\2003Github";
 }
 #popup #lst {
 	margin-top: 10px;

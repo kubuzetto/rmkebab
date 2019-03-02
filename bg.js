@@ -9,10 +9,11 @@ const setBadgeText = (n, tab) => browser.browserAction.
 const broadcastConf = conf => browser.tabs.query({}).then(tabs =>
 	{for(let tab of tabs) sendConfigTo(tab, conf)})
 const sendConfigTo = (tab, conf) => browser.tabs.sendMessage(tab.id,
-	{event: MSG_CONFIG, config: cfg})
+	{event: MSG_CONFIG, config: cfg}).catch(e => {})
 
 // incoming messages
-const handler = (msg, snd, sendResponse) => {
+const handler = (msg, snd) => {
+	let resp = {}
 	switch (msg.event) {
 		// from tabs
 		case MSG_UPDATE:
@@ -21,7 +22,7 @@ const handler = (msg, snd, sendResponse) => {
 
 		// from tabs
 		case MSG_REQUEST_CONF:
-			sendResponse(cfg)
+			resp = cfg
 			break
 
 		// from popup/main
@@ -36,7 +37,6 @@ const handler = (msg, snd, sendResponse) => {
 			cfg.rmd = []
 			browser.storage.local.set(cfg)
 			broadcastConf(cfg)
-			sendResponse({})
 			break
 
 		// from popup
@@ -44,9 +44,9 @@ const handler = (msg, snd, sendResponse) => {
 			cfg.rmd = cfg.rmd.filter(x => x.href !== msg.href)
 			browser.storage.local.set(cfg)
 			broadcastConf(cfg)
-			sendResponse({})
 			break
 	}
+	return Promise.resolve(resp)
 }
 
 // initialize

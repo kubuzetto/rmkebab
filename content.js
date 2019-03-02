@@ -65,13 +65,14 @@
 		then(c => updateConfig(c), e => updateConfig(null))
 	// to bg
 	const block = (href, name) => browser.runtime.sendMessage(
-		{event: MSG_BLOCK, href: href, nm: name})
+		{event: MSG_BLOCK, href: href, nm: name}).catch(e => {})
 	// to bg / popup
 	const sendCurrent = filtered => browser.runtime.sendMessage({
-		event: MSG_UPDATE, filtered: filtered})
+		event: MSG_UPDATE, filtered: filtered}).catch(e => {})
 
 	// incoming messages
 	const handler = (msg, snd, sendResponse) => {
+		let resp = {}
 		switch (msg.event) {
 			// from bg
 			case MSG_CONFIG:
@@ -79,19 +80,17 @@
 				break
 			// from popup
 			case MSG_REQUEST_FILT:
-				sendResponse(filt)
+				resp = filt
 				break
 		}
+		return Promise.resolve(resp)
 	}
 
 	// initialize
 	browser.runtime.onMessage.addListener(handler)
 	var reslists = document.getElementsByClassName(RSLS_CN)
 	if (reslists) {
-		let mo = new MutationObserver(ms => {
-			filt = [].concat.apply([], reslists.map(r => applyFilter(cfg, r)))
-			sendCurrent(filt)
-		})
+		let mo = new MutationObserver(ms => requestConfig().then(() => sendCurrent(filt)))
 		for (let reslist of reslists) mo.observe(reslist, {subtree: true, childList: true})
 	}
 	requestConfig()

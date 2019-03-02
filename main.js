@@ -21,8 +21,8 @@ const renderItem = (href, text) => {
 const update = () => browser.storage.local.get().then(f => renderItems(f.rmd), e => renderItems(null))
 
 // outgoing messages
-const unblock = href => browser.runtime.sendMessage({event: MSG_UNBLOCK, href: href}).then(update)
-const unblockAll = href => browser.runtime.sendMessage({event: MSG_UNBLOCK_ALL}).then(update)
+const unblock = href => browser.runtime.sendMessage({event: MSG_UNBLOCK, href: href}).then(update, update)
+const unblockAll = href => browser.runtime.sendMessage({event: MSG_UNBLOCK_ALL}).then(update, update)
 
 document.getElementById("unblockall").addEventListener("click", e => unblockAll())
 update()

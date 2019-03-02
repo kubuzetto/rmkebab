@@ -1,5 +1,6 @@
 const renderItems = items => {
     var q
+	items = items || []
 	document.querySelector("#hdr b").innerText = items.length
 	var lst = document.querySelector("#lst")
 	while (q = lst.lastChild) lst.removeChild(q)
@@ -23,21 +24,23 @@ const toLastTab = cb => browser.tabs.query({active: true, lastFocusedWindow: tru
 
 // outgoing messages
 // to bg
-const unblock = href => browser.runtime.sendMessage({event: MSG_UNBLOCK, href: href})
+const unblock = href => browser.runtime.sendMessage({event: MSG_UNBLOCK, href: href}).catch(e => {})
 // to tab
-const requestFiltered = toLastTab(tab =>
+const requestFiltered = () => toLastTab(tab =>
 	browser.tabs.sendMessage(tab.id, {event: MSG_REQUEST_FILT}).then
 		(f => renderItems(f), e => renderItems(null)))
 
 
 // incoming messages
-const handler = (msg, snd, sendResponse) => {
+const handler = (msg, snd) => {
+	let resp = {}
 	switch (msg.event) {
 		// from tabs
 		case MSG_UPDATE:
 			toLastTab(tab => {if (tab.id == snd.tab.id) renderItems(msg.filtered)})
 			break
 	}
+	return Promise.resolve(resp)
 }
 
 // initialize

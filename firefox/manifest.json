@@ -32,11 +32,17 @@
 	"content_scripts": [
 		{
 			"matches": ["*://*.yemeksepeti.com/*"],
-			"js": ["browser-polyfill.min.js", "constants.js", "content.js"],
+			"js": ["constants.js", "content.js"],
 			"css": ["content.css"]
 		}
 	],
 	"background": {
-		"scripts": ["browser-polyfill.min.js", "constants.js", "bg.js"]
+		"scripts": ["constants.js", "bg.js"]
+	},
+	"applications": {
+		"gecko": {
+			"id": "{e36b9550-00f3-4989-9f41-d1b8080bda8a}",
+			"strict_min_version": "57.0"
+		}
 	}
 }
