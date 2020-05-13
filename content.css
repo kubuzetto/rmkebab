@@ -1,5 +1,5 @@
 .removedKebab {
-	display: none;
+	display: none !important;
 }
 #popup body {
 	background: #fff;
