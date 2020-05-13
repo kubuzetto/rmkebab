@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Remove Kebab",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Yemeksepeti'nde asla sipariş vermeyeceğiniz restoranları listeden kaldırın, bir daha göstermesin.",
 	"homepage_url": "https://github.com/kubuzetto/rmkebab",
 	"icons": {
